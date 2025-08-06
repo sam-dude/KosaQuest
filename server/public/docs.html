@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kosa Quest API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            padding: 20px 0;
+        }
+
+        .header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            opacity: 0.9;
+            padding: 0 10px;
+        }
+
+        .api-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px 10px;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: clamp(0.8rem, 2.5vw, 1rem);
+            font-weight: 600;
+            color: #6c757d;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .nav-tab.active {
+            background: white;
+            color: #495057;
+            border-bottom: 3px solid #007bff;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            padding: 15px;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .endpoint {
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .endpoint-header:hover {
+            background: #e9ecef;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+            min-width: 50px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .method.GET {
+            background: #28a745;
+            color: white;
+        }
+
+        .method.POST {
+            background: #007bff;
+            color: white;
+        }
+
+        .method.PUT {
+            background: #ffc107;
+            color: black;
+        }
+
+        .method.DELETE {
+            background: #dc3545;
+            color: white;
+        }
+
+        .endpoint-url {
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+            color: #495057;
+            flex: 1;
+            word-break: break-all;
+            min-width: 200px;
+        }
+
+        .endpoint-description {
+            color: #6c757d;
+            font-style: italic;
+            font-size: clamp(0.8rem, 2vw, 0.9rem);
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        .endpoint-details {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .section {
+            margin-bottom: 15px;
+        }
+
+        .section h4 {
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 10px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
+            overflow-x: auto;
+            margin: 8px 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .json {
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .badge.required {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge.optional {
+            background: #6c757d;
+            color: white;
+        }
+
+        .response-codes {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .status-code {
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 3px;
+            text-align: center;
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+        }
+
+        .status-200 {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-201 {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-400 {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-401 {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-404 {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-500 {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .intro {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: -15px -15px 20px -15px;
+            text-align: center;
+        }
+
+        .intro h2 {
+            margin-bottom: 10px;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+        }
+
+        .intro p {
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            opacity: 0.9;
+        }
+
+        .base-url {
+            background: #343a40;
+            color: #fff;
+            padding: 12px;
+            border-radius: 5px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            margin: 15px 0;
+            text-align: center;
+            font-size: clamp(0.8rem, 2.5vw, 1.1rem);
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+
+        /* Mobile specific styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 5px;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+
+            .nav-tab {
+                flex: none;
+                padding: 15px;
+                border-bottom: 1px solid #e9ecef;
+            }
+
+            .nav-tab.active {
+                border-bottom: 3px solid #007bff;
+                border-left: 3px solid #007bff;
+            }
+
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .endpoint-url {
+                margin: 5px 0;
+                min-width: auto;
+                width: 100%;
+            }
+
+            .endpoint-description {
+                margin-top: 5px;
+                width: 100%;
+            }
+
+            .method {
+                margin-bottom: 5px;
+            }
+
+            .tab-content {
+                padding: 10px;
+            }
+
+            .endpoint-details {
+                padding: 10px;
+            }
+
+            .intro {
+                margin: -10px -10px 15px -10px;
+                padding: 15px;
+            }
+
+            .response-codes {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
+
+            .status-code {
+                margin-bottom: 3px;
+            }
+        }
+
+        /* Tablet specific styles */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                padding: 15px;
+            }
+
+            .nav-tab {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            .endpoint-details {
+                padding: 15px;
+            }
+        }
+
+        /* Large screen specific styles */
+        @media (min-width: 1025px) {
+            .container {
+                padding: 20px;
+            }
+
+            .tab-content {
+                padding: 30px;
+            }
+
+            .endpoint-details {
+                padding: 20px;
+            }
+
+            .intro {
+                margin: -30px -30px 30px -30px;
+                padding: 30px;
+            }
+        }
+
+        /* Very small screens */
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px 0;
+                margin-bottom: 15px;
+            }
+
+            .api-container {
+                border-radius: 10px;
+            }
+
+            .code-block {
+                font-size: 0.7rem;
+                padding: 8px;
+            }
+
+            .badge {
+                font-size: 0.65rem;
+                padding: 2px 6px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Kosa Quest API</h1>
+            <p>Complete API Documentation for the Kosa Quest Platform</p>
+        </div>
+
+        <div class="api-container">
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showTab('overview')">Overview</button>
+                <button class="nav-tab" onclick="showTab('auth')">Authentication</button>
+                <button class="nav-tab" onclick="showTab('user')">User</button>
+                <button class="nav-tab" onclick="showTab('stories')">Stories</button>
+                <button class="nav-tab" onclick="showTab('quiz')">Quiz</button>
+                <button class="nav-tab" onclick="showTab('nft')">NFT Badges</button>
+            </div>
+
+            <div class="tab-content">
+                <!-- Overview Tab -->
+                <div id="overview" class="tab-pane active">
+                    <div class="intro">
+                        <h2>Welcome to Kosa Quest API</h2>
+                        <p>A comprehensive learning platform with gamification, NFT badges, and interactive storytelling
+                        </p>
+                    </div>
+
+                    <h3>Base URL</h3>
+                    <div class="base-url">https://kosa-quest-core-backend-service.onrender.com/api</div>
+
+                    <h3>Authentication</h3>
+                    <p>Most endpoints require JWT authentication. Include the token in the Authorization header:</p>
+                    <div class="code-block">Authorization: Bearer YOUR_JWT_TOKEN</div>
+
+                    <h3>Response Format</h3>
+                    <p>All responses follow a consistent format:</p>
+                    <div class="code-block json">{
+                        "status": "Success/Error",
+                        "message": "Descriptive message",
+                        "data": { /* Response data */ }
+                        }</div>
+                </div>
+
+                <!-- Authentication Tab -->
+                <div id="auth" class="tab-pane">
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method POST">POST</span>
+                            <span class="endpoint-url">/auth/register</span>
+                            <span class="endpoint-description">Register a new user</span>
+                        </div>
+                        <div class="endpoint-details">
+                            <div class="section">
+                                <h4>Request Body</h4>
+                                <div class="code-block json">{
+                                    "name": "John Doe", // <span class="badge required">required</span>
+                                    "email": "john.doe@example.com", // <span class="badge required">required</span>
+                                    "password": "securePassword123" // <span class="badge required">required</span>
+                                    }</div>
+                            </div>
+                            <div class="section">
+                                <h4>Response (201)</h4>
+                                <div class="code-block json">{
+                                    "status": "Created",
+                                    "message": "User registered successfully. Please verify your email.",
+                                    "data": {
+                                    "user": {
+                                    "id": "user_id",
+                                    "name": "John Doe",
+                                    "email": "john.doe@example.com",
+                                    "xp": 0,
+                                    "isEmailVerified": false
+                                    }
+                                    }
+                                    }</div>
+                            </div>
+                            <div class="section">
+                                <h4>Response Codes</h4>
+                                <div class="response-codes">
+                                    <span class="status-code status-201">201</span>
+                                    <span>User registered successfully</span>
+                                    <span class="status-code status-400">400</span>
+                                    <span>Missing required fields</span>
+                                    <span class="status-code status-409">409</span>
+                                    <span>User with this email already exists</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method POST">POST</span>
+                            <span class="endpoint-url">/auth/login</span>
+                            <span class="endpoint-description">Login user</span>
+                        </div>
+                        <div class="endpoint-details">
+                            <div class="section">
+                                <h4>Request Body</h4>
+                                <div class="code-block json">{
+                                    "email": "john.doe@example.com", // <span class="badge required">required</span>
+                                    "password": "securePassword123" // <span class="badge required">required</span>
+                                    }</div>
+                            </div>
+                            <div class="section">
+                                <h4>Response (200)</h4>
+                                <div class="code-block json">{
+                                    "status": "OK",
+                                    "message": "Login successful",
+                                    "data": {
+                                    "user": {
+                                    "id": "user_id",
+                                    "name": "John Doe",
+                                    "email": "john.doe@example.com",
+                                    "xp": 150,
+                                    "isEmailVerified": true
+                                    },
+                                    "token": "jwt_token_here"
+                                    }
+                                    }</div>
+                            </div>
+                            <div class="section">
+                                <h4>Response Codes</h4>
+                                <div class="response-codes">
+                                    <span class="status-code status-200">200</span>
+                                    <span>Login successful</span>
+                                    <span class="status-code status-400">400</span>
+                                    <span>Missing email or password</span>
+                                    <span class="status-code status-401">401</span>
+                                    <span>Invalid email or password</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method POST">POST</span>
+                            <span class="endpoint-url">/auth/verify-email</span>
+                            <span class="endpoint-description">Verify email address</span>
+                        </div>
+                        <div class="endpoint-details">
+                            <div class="section">
+                                <h4>Request Body</h4>
+                                <div class="code-block json">{
+                                    "email": "john.doe@example.com", // <span class="badge required">required</span>
+                                    "verificationCode": "123456" // <span class="badge required">required</span>
+                                    }</div>
+                            </div>
+                            <div class="section">
+                                <h4>Response (200)</h4>
+                                <div class="code-block json">{
+                                    "status": "OK",
+                                    "message": "Email verified successfully"
+                                    }</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Tab -->
+                <div id="user" class="tab-pane">
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method GET">GET</span>
+                            <span class="endpoint-url">/user/profile</span>
+                            <span class="endpoint-description">Get user profile</span>
+                        </div>
+                        <div class="endpoint-details">
+                            <div class="section">
+                                <h4>Headers</h4>
+                                <div class="code-block">Authorization: Bearer JWT_TOKEN <span
+                                        class="badge required">required</span></div>
+                            </div>
+                            <div class="section">
+                                <h4>Response (200)</h4>
+                                <div class="code-block json">{
+                                    "status": "OK",
+                                    "message": "Profile retrieved successfully",
+                                    "data": {
+                                    "user": {
+                                    "id": "user_id",
+                                    "name": "John Doe",
+                                    "email": "john.doe@example.com",
+                                    "xp": 150,
+                                    "isEmailVerified": true,
+                                    "createdAt": "2024-01-01T00:00:00.000Z",
+                                    "updatedAt": "2024-01-01T00:00:00.000Z"
+                                    }
+                                    }
+                                    }</div>
+                            </div>
+                            <div class="section">
+                                <h4>Response Codes</h4>
+                                <div class="response-codes">
+                                    <span class="status-code status-200">200</span>
+                                    <span>Profile retrieved successfully</span>
+                                    <span class="status-code status-401">401</span>
+                                    <span>User not authenticated</span>
+                                    <span class="status-code status-404">404</span>
+                                    <span>User not found</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stories Tab -->
+                <div id="stories" class="tab-pane">
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method GET">GET</span>
+                            <span class="endpoint-url">/stories</span>
+                            <span class="endpoint-description">Get all stories</span>
+                        </div>
+                        <div class="endpoint-details">
+                            <div class="section">
+                                <h4>Query Parameters</h4>
+                                <div class="code-block">
+                                    difficulty: Filter by difficulty (Beginner, Intermediate, Advanced) <span
+                                        class="badge optional">optional</span>
+                                    language: Filter by language (English, Native) <span
+                                        class="badge optional">optional</span>
+                                </div>
+                            </div>
+                            <div class="section">
+                                <h4>Response (200)</h4>
+                                <div class="code-block json">{
+                                    "status": "OK",
+                                    "message": "Stories retrieved successfully",
+                                    "data": {
+                                    "stories": [
+                                    {
+                                    "storyId": "story_001",
+                                    "title": "The Wise Tortoise",
+                                    "description": "A story about patience and wisdom",
+                                    "language": "English",
+                                    "difficulty": "Beginner",
+                                    "totalXP": 50
+                                    }
+                                    ],
+                                    "count": 1
+                                    }
+                                    }</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method GET">GET</span>
+                            <span class="endpoint-url">/stories/:storyId</span>
+                            <span class="endpoint-description">Get story by ID</span>
+                        </div>
+                        <div class="endpoint-details">
+                            <div class="section">
+                                <h4>URL Parameters</h4>
+                                <div class="code-block">storyId: Story ID <span class="badge required">required</span>
+                                </div>
+                            </div>
+                            <div class="section">
+                                <h4>Response (200)</h4>
+                                <div class="code-block json">{
+                                    "status": "OK",
+                                    "message": "Story retrieved successfully",
+                                    "data": {
+                                    "storyId": "story_001",
+                                    "title": "The Wise Tortoise",
+                                    "description": "A story about patience and wisdom",
+                                    "language": "English",
+                                    "difficulty": "Beginner",
+                                    "pages": [
+                                    {
+                                    "pageNo": 1,
+                                    "english": "Once upon a time...",
+                                    "native": "Il était une fois..."
+                                    }
+                                    ],
+                                    "quizzes": [
+                                    {
+                                    "questionId": "q1",
+                                    "question": "What is the main lesson of the story?",
+                                    "options": ["Patience", "Speed", "Luck", "Money"],
+                                    "answer": "Patience"
+                                    }
+                                    ],
+                                    "totalXP": 50
+                                    }
+                                    }</div>
+                            </div>
+                            <div class="section">
+                                <h4>Response Codes</h4>
+                                <div class="response-codes">
+                                    <span class="status-code status-200">200</span>
+                                    <span>Story retrieved successfully</span>
+                                    <span class="status-code status-400">400</span>
+                                    <span>Story ID is required</span>
+                                    <span class="status-code status-404">404</span>
+                                    <span>Story not found</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz Tab -->
+                <div id="quiz" class="tab-pane">
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method POST">POST</span>
+                            <span class="endpoint-url">/quiz/submit</span>
+                            <span class="endpoint-description">Submit quiz answers</span>
+                        </div>
+                        <div class="endpoint-details">
+                            <div class="section">
+                                <h4>Headers</h4>
+                                <div class="code-block">Authorization: Bearer JWT_TOKEN <span
+                                        class="badge required">required</span></div>
+                            </div>
+                            <div class="section">
+                                <h4>Request Body</h4>
+                                <div class="code-block json">{
+                                    "storyId": "story_001", // <span class="badge required">required</span>
+                                    "responses": [ // <span class="badge required">required</span>
+                                    {
+                                    "questionId": "q1",
+                                    "answer": "Patience"
+                                    },
+                                    {
+                                    "questionId": "q2",
+                                    "answer": "Wisdom"
+                                    }
+                                    ]
+                                    }</div>
+                            </div>
+                            <div class="section">
+                                <h4>Response (200)</h4>
+                                <div class="code-block json">{
+                                    "status": "OK",
+                                    "message": "Quiz submitted successfully",
+                                    "data": {
+                                    "xpEarned": 50,
+                                    "totalXP": 150,
+                                    "score": 8,
+                                    "maxScore": 10,
+                                    "scorePercentage": 80,
+                                    "results": [
+                                    {
+                                    "questionId": "q1",
+                                    "answer": "Patience",
+                                    "isCorrect": true,
+                                    "pointsEarned": 5
+                                    }
+                                    ]
+                                    }
+                                    }</div>
+                            </div>
+                            <div class="section">
+                                <h4>Response Codes</h4>
+                                <div class="response-codes">
+                                    <span class="status-code status-200">200</span>
+                                    <span>Quiz submitted successfully</span>
+                                    <span class="status-code status-400">400</span>
+                                    <span>Story ID and responses array are required</span>
+                                    <span class="status-code status-401">401</span>
+                                    <span>User not authenticated</span>
+                                    <span class="status-code status-404">404</span>
+                                    <span>Story not found</span>
+                                    <span class="status-code status-409">409</span>
+                                    <span>You have already completed this story</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NFT Tab -->
+                <div id="nft" class="tab-pane">
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method POST">POST</span>
+                            <span class="endpoint-url">/nft/mint</span>
+                            <span class="endpoint-description">Mint NFT badge</span>
+                        </div>
+                        <div class="endpoint-details">
+                            <div class="section">
+                                <h4>Headers</h4>
+                                <div class="code-block">Authorization: Bearer JWT_TOKEN <span
+                                        class="badge required">required</span></div>
+                            </div>
+                            <div class="section">
+                                <h4>Request Body</h4>
+                                <div class="code-block json">{
+                                    "badgeType": "proverb_apprentice" // <span class="badge optional">optional, defaults
+                                        to proverb_apprentice</span>
+                                    }</div>
+                            </div>
+                            <div class="section">
+                                <h4>Available Badge Types</h4>
+                                <div class="code-block">
+                                    proverb_apprentice - 1 XP required (First story completion)
+                                    story_master - 500 XP required (Complete 10 stories)
+                                    quiz_champion - 250 XP required (Perfect scores on 5 quizzes)
+                                    language_explorer - 1000 XP required (Multiple languages)
+                                </div>
+                            </div>
+                            <div class="section">
+                                <h4>Response (201)</h4>
+                                <div class="code-block json">{
+                                    "status": "Created",
+                                    "message": "NFT badge minted successfully",
+                                    "data": {
+                                    "badgeLink": "https://opensea.io/assets/kosa-quest/proverb_apprentice-user_id",
+                                    "txHash": "0xabc123def456...",
+                                    "badge": {
+                                    "id": "badge_id",
+                                    "name": "Proverb Apprentice",
+                                    "type": "proverb_apprentice",
+                                    "description": "Completed your first story and earned your first XP",
+                                    "imageUrl": "https://example.com/badges/proverb-apprentice.png",
+                                    "issuedAt": "2024-01-01T00:00:00.000Z"
+                                    }
+                                    }
+                                    }</div>
+                            </div>
+                            <div class="section">
+                                <h4>Response Codes</h4>
+                                <div class="response-codes">
+                                    <span class="status-code status-201">201</span>
+                                    <span>NFT badge minted successfully</span>
+                                    <span class="status-code status-400">400</span>
+                                    <span>Invalid badge type or insufficient XP</span>
+                                    <span class="status-code status-401">401</span>
+                                    <span>User not authenticated</span>
+                                    <span class="status-code status-404">404</span>
+                                    <span>User not found</span>
+                                    <span class="status-code status-409">409</span>
+                                    <span>Badge already minted for this user</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method GET">GET</span>
+                            <span class="endpoint-url">/nft/my-badges</span>
+                            <span class="endpoint-description">Get user's NFT badges</span>
+                        </div>
+                        <div class="endpoint-details">
+                            <div class="section">
+                                <h4>Headers</h4>
+                                <div class="code-block">Authorization: Bearer JWT_TOKEN <span
+                                        class="badge required">required</span></div>
+                            </div>
+                            <div class="section">
+                                <h4>Response (200)</h4>
+                                <div class="code-block json">{
+                                    "status": "OK",
+                                    "message": "Badges retrieved successfully",
+                                    "data": {
+                                    "badges": [
+                                    {
+                                    "id": "badge_id",
+                                    "name": "Proverb Apprentice",
+                                    "type": "proverb_apprentice",
+                                    "description": "Completed your first story and earned your first XP",
+                                    "imageUrl": "https://example.com/badges/proverb-apprentice.png",
+                                    "badgeLink": "https://opensea.io/assets/kosa-quest/proverb_apprentice-user_id",
+                                    "txHash": "0xabc123def456...",
+                                    "issuedAt": "2024-01-01T00:00:00.000Z"
+                                    }
+                                    ],
+                                    "count": 1
+                                    }
+                                    }</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method GET">GET</span>
+                            <span class="endpoint-url">/nft/check-eligibility</span>
+                            <span class="endpoint-description">Check badge eligibility</span>
+                        </div>
+                        <div class="endpoint-details">
+                            <div class="section">
+                                <h4>Headers</h4>
+                                <div class="code-block">Authorization: Bearer JWT_TOKEN <span
+                                        class="badge required">required</span></div>
+                            </div>
+                            <div class="section">
+                                <h4>Response (200)</h4>
+                                <div class="code-block json">{
+                                    "status": "OK",
+                                    "message": "Badge eligibility checked successfully",
+                                    "data": {
+                                    "eligibleBadges": [
+                                    {
+                                    "type": "proverb_apprentice",
+                                    "name": "Proverb Apprentice",
+                                    "description": "Completed your first story and earned your first XP",
+                                    "xpRequired": 1
+                                    }
+                                    ],
+                                    "userXP": 150
+                                    }
+                                    }</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab panes
+            const tabPanes = document.querySelectorAll('.tab-pane');
+            tabPanes.forEach(pane => pane.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab pane
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Add click handlers for endpoint headers
+        document.addEventListener('DOMContentLoaded', function () {
+            const endpointHeaders = document.querySelectorAll('.endpoint-header');
+            endpointHeaders.forEach(header => {
+                header.addEventListener('click', function () {
+                    const details = this.nextElementSibling;
+                    if (details.style.display === 'none' || !details.style.display) {
+                        details.style.display = 'block';
+                    } else {
+                        details.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
