@@ -116,7 +116,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (response.data.user.isEmailVerified) {
           router.replace('/(tabs)');
         } else {
-          router.push('/onboarding/verify-email');
+          router.replace('/(tabs)');
         }
         
         return { success: true };
