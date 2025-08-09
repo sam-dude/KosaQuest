@@ -1,0 +1,23 @@
+# Add mobile/ prefix to paths that need it
+mobile/KosaQuest/node_modules/
+mobile/KosaQuest/.expo/
+mobile/KosaQuest/dist/
+mobile/KosaQuest/web-build/
+mobile/KosaQuest_backup/node_modules/
+mobile/KosaQuest_backup/.expo/
+mobile/KosaQuest_backup/dist/
+mobile/KosaQuest_backup/web-build/
+
+# Keep global patterns as-is
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+.DS_Store
+*.pem
+.env*.local
+.env
+*.tsbuildinfo
+*.log
